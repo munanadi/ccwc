@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"log"
@@ -35,11 +36,20 @@ func main() {
 		}
 	}
 
+	words := bytes.Fields(fileBytes)
+	wordCount := len(words)
+
+	// Number of words in file
+
 	switch option {
 	case "-c":
 		fmt.Printf("\t%d\t%s", countOfBytes, fileName)
 	case "-l":
 		fmt.Printf("\t%d\t%s", lineCount, fileName)
+	case "-w":
+		fmt.Printf("\t%d\t%s", wordCount, fileName)
+	default:
+		fmt.Printf("%s that option is not found", option)
 	}
 
 }

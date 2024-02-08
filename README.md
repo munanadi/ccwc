@@ -8,6 +8,8 @@ Options:
 
 1. `-c` count the number of bytes
 2. `-l` count the number of lines
+3. `-w` count number of words
+4. `-m` count number of utf-8 bytes. (runes)
 
 ---
 

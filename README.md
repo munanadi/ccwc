@@ -18,3 +18,10 @@ Usage
 ```sh
   go run main.go -- -c test.txt
 ```
+
+
+cat test.txt | ccwc -m
+
+ccwc -m test.txt
+
+ccwc test.txt

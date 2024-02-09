@@ -1,28 +1,42 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
+	"sync"
 )
+
+var wg sync.WaitGroup
 
 func main() {
 
+	wg.Add(1)
+
+	lineFlag := flag.Bool("l", false, "counts lines")
+	wordFlag := flag.Bool("w", false, "counts words")
+	byteFlag := flag.Bool("c", false, "counts bytes")
+	runeFlag := flag.Bool("m", false, "counts runes")
+
 	flag.Parse()
+	fileName := flag.Arg(0)
 
-	// Read a file from the args.
-	// go run main.go -- -c test.txt
-	// -c
-	option := flag.Arg(0)
-	// test.txt
-	fileName := flag.Arg(1)
+	finalBytes := make(chan []byte)
 
-	// Open the file
-	fileBytes, err := os.ReadFile(fileName)
-	if err != nil {
-		log.Fatalf("%s not found in the current directory", fileName)
+	if fileName == "" {
+		go readFromStdIn(finalBytes)
+	} else {
+		go goReadFileBytes(fileName, finalBytes)
+	}
+
+	var fileBytes []byte
+
+	for v := range finalBytes {
+		fileBytes = append(fileBytes, v...)
 	}
 
 	// Number of bytes
@@ -45,17 +59,45 @@ func main() {
 	words := bytes.Fields(fileBytes)
 	wordCount := len(words)
 
-	switch option {
-	case "-c":
+	if *byteFlag && *lineFlag && *wordFlag {
+		fmt.Printf("\t%d\t%d\t%d\t%s", lineCount, wordCount, countOfBytes, fileName)
+	} else if *byteFlag {
+
 		fmt.Printf("\t%d\t%s", countOfBytes, fileName)
-	case "-l":
+	} else if *lineFlag {
+
 		fmt.Printf("\t%d\t%s", lineCount, fileName)
-	case "-w":
+	} else if *wordFlag {
 		fmt.Printf("\t%d\t%s", wordCount, fileName)
-	case "-m":
+
+	} else if *runeFlag {
+
 		fmt.Printf("\t%d\t%s", characterCount, fileName)
-	default:
-		fmt.Printf("%s that option is not found", option)
+	} else {
+		fmt.Printf("option not know")
 	}
 
+	wg.Wait()
+}
+
+func goReadFileBytes(fileName string, finalBytes chan []byte) {
+	bytes, err := os.ReadFile(fileName)
+	if err != nil {
+		log.Fatalf("%s not found in the current directory", fileName)
+	}
+
+	finalBytes <- bytes
+	close(finalBytes)
+	wg.Done()
+}
+
+func readFromStdIn(finalBytes chan []byte) {
+	reader := bufio.NewReader(os.Stdin)
+	readBytes, err := io.ReadAll(reader)
+	if err != nil {
+		log.Fatalln("something went wrong reading bytes from stdin")
+	}
+	finalBytes <- readBytes
+	close(finalBytes)
+	wg.Done()
 }

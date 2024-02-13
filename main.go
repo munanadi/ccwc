@@ -62,16 +62,12 @@ func main() {
 	if *byteFlag && *lineFlag && *wordFlag {
 		fmt.Printf("\t%d\t%d\t%d\t%s", lineCount, wordCount, countOfBytes, fileName)
 	} else if *byteFlag {
-
 		fmt.Printf("\t%d\t%s", countOfBytes, fileName)
 	} else if *lineFlag {
-
 		fmt.Printf("\t%d\t%s", lineCount, fileName)
 	} else if *wordFlag {
 		fmt.Printf("\t%d\t%s", wordCount, fileName)
-
 	} else if *runeFlag {
-
 		fmt.Printf("\t%d\t%s", characterCount, fileName)
 	} else {
 		fmt.Printf("option not know")

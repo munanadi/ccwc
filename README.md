@@ -16,12 +16,12 @@ Options:
 Usage
 
 ```sh
-  go run main.go -- -c test.txt
+ccwc -w test.txt
 ```
 
+or it takes input from the stdin stream as well
 
-cat test.txt | ccwc -m
+```sh
+cat test.txt | ccwc -c
+```
 
-ccwc -m test.txt
-
-ccwc test.txt
